@@ -1,0 +1,390 @@
+<html>
+  <head>
+    <title>A Tank of Turtles</title>
+    <style>
+      canvas { width: 100%; height: 100% }
+      body { background-color: grey; }
+      p {
+        position: absolute;
+        left: 1020px;
+        top: 10px;
+        font-size:25px;
+      }
+    </style>
+    <meta charset="UTF-8">
+  </head>
+    <body>
+      <script src="./three.js"></script>
+      <script src="./TrackballControls.js"></script>
+      <script src="./turtle.js"></script>
+      <script type="text/javascript">
+        var clock = new THREE.Clock();
+        clock.start();
+        var scene, camera, renderer, controls;
+        var turtleMatrial, eyeMaterial, waterMaterial, glassMaterial, tableMaterial, glassMaterial1;
+        var directionalLight, ambientLight;
+        var turtles, water;
+        var keys = [0, 0.25, 0.5, 0.75, 1];
+        var frontLegsRotationValues = [-90, -55, -15, -55, -90];
+        var rearLegsRotationValues = [-180, -160, -120, -160, -180];
+        var headRotationValues = [30, 10, -20, 10, 30];
+        var tailRotationValues = [-30, 10, 20, 10, -30];
+        var directionValues = [1, -1, 0.5, -0.5, 1];
+        var t = 0;
+        var speed = 0.12;
+        var glass1, glass2, glass3, glass4;
+        var tank, table;
+        var xMinBound = -13.5, xMaxBound = 13.5, zMinBound = -7.5, zMaxBound = 7.5;
+        var numOfTadpoles = 270;
+        var numOfTurtles = 5;
+        var tadpoles;
+        var tadpoleSpeed = 0.11;
+        var world;
+        var randomSpeeds;
+
+        init();
+        createTable();
+        adjustTadpoleDetails();
+
+
+        function init() {
+          scene = new THREE.Scene();
+          camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+          renderer = new THREE.WebGLRenderer();
+          renderer.setSize(1000, 700);
+          renderer.setClearColor(0xc0c0c0, 1);
+          document.body.appendChild(renderer.domElement);
+          document.onkeydown = handleKeyDown;
+          controls = new THREE.TrackballControls(camera);
+          controls.addEventListener('change', render);
+          animate();
+
+          turtleMaterial = new THREE.MeshPhongMaterial({color: 0xff9966, flatShading: true});
+
+          eyeMaterial = new THREE.MeshPhongMaterial({color: 0x000000});
+
+          waterMaterial = new THREE.MeshPhongMaterial({
+               color: 0x3b8792,
+               opacity: 0.8, transparent: true
+          });
+
+          glassMaterial = new THREE.MeshPhongMaterial({
+                color: 0xa9a9a9,
+                opacity: 0.4, transparent: true
+          });
+
+          glassMaterial1 = new THREE.MeshPhongMaterial({
+                color: 0xa9a9a9,
+                opacity: 1, transparent: true
+          });
+
+          tableMaterial = new THREE.MeshPhongMaterial({
+                color: 0x805a46,
+          });
+
+          directionalLight  = new THREE.DirectionalLight(0xffffff, 0.5);
+          directionalLight.position.set(2, 3, 0);
+          scene.add(directionalLight);
+
+          ambientLight = new THREE.AmbientLight(0xffffff);
+          scene.add(ambientLight);
+
+          world = new THREE.Object3D();
+          tank = new THREE.Object3D();
+          turtles = [];
+          tadpoles = [];
+          randomSpeeds = [];
+
+          //random speed value for each turtle
+          for (var i = 0; i < numOfTurtles; i++){
+            randomSpeeds[i] = getRandom(0.05,0.15);
+          }
+
+          //add tadpoles with random position, and angles
+          for (var j = 0; j < numOfTadpoles; j++) {
+            tadpoles[j] = createHead(turtleMatrial, eyeMaterial);
+            tadpoles[j].scale.set(getRandom(1,1.4),1,getRandom(0.2,0.4));
+            tadpoles[j].rotation.y = (Math.random() - 0.5) * Math.PI;
+            tadpoles[j].position.x = getRandom(-16,13);
+            tadpoles[j].position.y = getRandom(-5,-0.5);
+            tadpoles[j].position.z = getRandom(-9,9);
+            world.add(tadpoles[j]);
+          }
+
+          //add turltes
+          for (var i = 0; i < numOfTurtles; i++) {
+            turtles[i] = createTurtle(turtleMaterial, eyeMaterial);
+            turtles[i].position.x = getRandom(-14,14);
+            turtles[i].rotation.y = (Math.random() - 0.5) * Math.PI;
+            turtles[i].position.z = getRandom(-8,8);
+            turtles[i].scale.set(0.9, 0.9, 0.9);
+            world.add(turtles[i]);
+          }
+
+          //add water
+          var geometry = new THREE.BoxGeometry(32, 6, 20);
+          var water = new THREE.Mesh(geometry, waterMaterial);
+          water.position.y = -3;
+
+          //add tank glass
+          var glassGeometry1 = new THREE.BoxGeometry(32, 0.1, 10);
+          var glassGeometry2 = new THREE.BoxGeometry(10, 0.1, 20);
+          var glassGeometry3 = new THREE.BoxGeometry(32.1, 0.1, 20.1);
+          glass1 = new THREE.Mesh(glassGeometry1, glassMaterial);
+          glass1.rotation.x = Math.PI /2;
+          glass1.position.z = -10;
+
+          glass2 = new THREE.Mesh(glassGeometry1, glassMaterial);
+          glass2.rotation.x = Math.PI /2;
+          glass2.position.z = 10;
+
+          glass3 = new THREE.Mesh(glassGeometry2, glassMaterial);
+          glass3.rotation.z = Math.PI /2;
+          glass3.position.x = 16;
+
+          glass4 = new THREE.Mesh(glassGeometry2, glassMaterial);
+          glass4.rotation.z = Math.PI /2;
+          glass4.position.x = -16;
+
+          glass5 = new THREE.Mesh(glassGeometry3, glassMaterial1);
+          glass5.position.y = -5;
+          tank.add(glass1);
+          tank.add(glass2);
+          tank.add(glass3);
+          tank.add(glass4);
+          tank.add(glass5);
+          tank.position.y = -1;
+
+          world.add(tank);
+          world.add(water);
+          scene.add(world);
+          camera.position.z = 35;
+          camera.position.y = 25;
+        }
+
+        //turtle swing motion animation
+        function swing(){
+          var dt = clock.getDelta();
+          t += dt;
+
+          if (t > 1)
+            t = 0;
+
+          for (var i = 0; i < turtles.length; i++) {
+            var leg1 = turtles[i].children[0];
+            leg1.rotation.y = toRad(interpolator(keys, frontLegsRotationValues, t));
+
+            var leg2 = turtles[i].children[1];
+            leg2.rotation.y = -toRad(interpolator(keys, frontLegsRotationValues, t));
+
+            var leg3 = turtles[i].children[2];
+            leg3.rotation.y = -toRad(interpolator(keys, rearLegsRotationValues, t));
+
+            var leg4 = turtles[i].children[3];
+            leg4.rotation.y = toRad(interpolator(keys, rearLegsRotationValues, t));
+
+            if (feed) {
+              var head = turtles[i].children[4];
+              head.rotation.z = toRad(interpolator(keys, headRotationValues, t));
+            }
+            var tail = turtles[i].children[5];
+            tail.rotation.z = toRad(interpolator(keys, tailRotationValues, t));
+          }
+          renderer.render(scene, camera);
+
+          requestAnimationFrame(swing);
+        }
+
+        //turtle/tadpoles movement and collision detection
+        function swim(){
+          //turtle collision with walls and between each other
+          for (var i = 0; i < turtles.length; i++) {
+            for (var j = 0; j < turtles.length; j++) {
+              //test if turtles hits edges, move it back to the range
+              //and change its rotation
+              if (turtles[i].position.z <= zMinBound){
+                turtles[i].position.z = zMinBound + 0.2;
+                turtles[i].rotation.y *= -1;
+              }
+              if (turtles[i].position.z >= zMaxBound){
+                turtles[i].position.z = zMaxBound - 0.2;
+                turtles[i].rotation.y *= -1;
+              }
+              if (turtles[i].position.x <= xMinBound) {
+                turtles[i].position.x = xMinBound + 0.2;
+                turtles[i].rotation.y = Math.PI - turtles[i].rotation.y;
+              }
+              if (turtles[i].position.x >= xMaxBound) {
+                console.log(turtles[0].position.x);
+                turtles[i].position.x = xMaxBound - 0.2;
+                turtles[i].rotation.y = Math.PI - turtles[i].rotation.y;
+              }
+              //collision between two turtles
+              if ( i != j && distance(turtles[i].position.x,turtles[i].position.z,
+                  turtles[j].position.x,turtles[j].position.z ) < 2.8){
+                  turtles[i].rotation.y *= -1;
+                  turtles[j].rotation.y *= -1;
+              }
+            }
+            turtles[i].position.z += Math.sin(-turtles[i].rotation.y) * randomSpeeds[i];
+            turtles[i].position.x += Math.cos(-turtles[i].rotation.y) * randomSpeeds[i];
+          }
+
+        //tadpoles collision with walls
+          for (var i = 0; i < tadpoles.length; i++) {
+            if (tadpoles[i].position.z <= zMinBound - 1){
+              tadpoles[i].position.z = zMinBound - 1;
+              tadpoles[i].rotation.y *= -1;
+            }
+            if (tadpoles[i].position.z >= zMaxBound + 1){
+              tadpoles[i].position.z = zMaxBound + 1;
+              tadpoles[i].rotation.y *= -1;
+            }
+            if (tadpoles[i].position.x <= xMinBound - 1) {
+              tadpoles[i].position.x = xMinBound - 1;
+              tadpoles[i].rotation.y = Math.PI - tadpoles[i].rotation.y;
+            }
+            if (tadpoles[i].position.x >= xMaxBound + 1) {
+              tadpoles[i].position.x = xMaxBound + 1;
+              tadpoles[i].rotation.y = Math.PI - tadpoles[i].rotation.y;
+            }
+            tadpoles[i].position.z += Math.sin(-tadpoles[i].rotation.y) * tadpoleSpeed;
+            tadpoles[i].position.x += Math.cos(-tadpoles[i].rotation.y) * tadpoleSpeed;
+          }
+
+          renderer.render(scene, camera);
+          requestAnimationFrame(swim);
+        }
+
+        var feed = false;
+        var startPressed = false;
+        function handleKeyDown(event){
+          switch(event.keyCode) {
+            //F
+            case 70:
+              feed = true;
+              break;
+            //S
+            case 83:
+              if (!startPressed){
+                swing();
+                swim();
+                startPressed = true;
+              }
+              break;
+            //X
+            case 88:
+              toggleAxes();
+              break;
+            //L
+            case 76:
+              toggleLight();
+              break;
+            //M
+            case 77:
+              toggleWireframe();
+              break;
+          }
+        }
+
+        //turn off the tadpole axes and resize the eyes
+        function adjustTadpoleDetails() {
+          scene.traverse(function(node) {
+            if (node.name == "headAxes") {
+              node.material.visible = false;
+            }
+            if (node.name == "eye1")
+              node.scale.set(0.3,0.3,0.3);
+            if (node.name == "eye2")
+              node.scale.set(0.3,0.3,0.3);
+          });
+        }
+
+        function getRandom(min, max) {
+          return Math.random() * (max - min) + min;
+        }
+
+        function createTable(){
+          var tableGeometry1 = new THREE.BoxGeometry(60, 2, 35);
+          tablePlane = new THREE.Mesh(tableGeometry1, tableMaterial);
+          tablePlane.position.y = -7;
+
+          tableLeg1 = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), tableMaterial);
+          tableLeg1.scale.set(3,25,3);
+          tableLeg1.position.set(22, -20, 12);
+
+          tableLeg2 = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), tableMaterial);
+          tableLeg2.scale.set(3,25,3);
+          tableLeg2.position.set(22, -20, -12);
+
+          tableLeg3 = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), tableMaterial);
+          tableLeg3.scale.set(3,25,3);
+          tableLeg3.position.set(-22, -20, 12);
+
+          tableLeg4 = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), tableMaterial);
+          tableLeg4.scale.set(3,25,3);
+          tableLeg4.position.set(-22, -20, -12);
+          var groundMaterial = new THREE.MeshPhongMaterial({color: 0x7d7d7d});
+          var ground = new THREE.Mesh(new THREE.BoxGeometry(180, 1, 150), groundMaterial);
+          ground.scale.set(1,0.1,1);
+          ground.position.y = -32.5;
+          world.add(ground);
+          world.add(tablePlane);
+          world.add(tableLeg1);
+          world.add(tableLeg2);
+          world.add(tableLeg3);
+          world.add(tableLeg4);
+        }
+
+        function distance(x1, y1, x2, y2) {
+          var a = x2 - x1;
+          var b = y2 - y1;
+          return Math.sqrt(a * a + b * b);
+        }
+
+        function findInterval(keys, key){
+          for (var i = 0; i < keys.length; i++){
+            if (key >= keys[i] && key <= keys[i + 1])
+              return i;
+          }
+          return -1;
+        }
+
+        function lerp(k1, v1, k2, v2, k){
+          return v1 + (k - k1)/(k2 - k1) * (v2 - v1);
+        }
+
+        function interpolator(keys, values, key){
+          var i = findInterval(keys, key);
+          var v = lerp(keys[i], values[i], keys[i + 1], values[i + 1], key);
+          return v;
+        }
+
+        function toRad(deg){
+          return deg / 180 * Math.PI;
+        }
+
+        </script>
+        <p>
+          - Collision between turtles is a bit buggy.
+        </p>
+        <p style="top:60">
+          - Collision with walls work correctly tho.
+        </p>
+        <p style="top:120">
+          - Set "numOfTadpoles" to lower values to reduce lagginess.
+        </p>
+        <p style="top:200">
+          - Comment out adjustTadpoleDetails() will reduce laggieness too since it traverses the scene.
+        </p>
+        <p style="top:280">
+          - press 'S' to move the turltes and tadpoles.
+        </p>
+        <p style="top:340">
+          - press 'F' to enable turtle neck movement animation.
+        </p>
+        <p style="top:400">
+          - script for the second part is within this html.
+        </p>
+    </body>
+</html>
