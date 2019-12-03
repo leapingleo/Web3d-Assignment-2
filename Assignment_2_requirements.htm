@@ -1,0 +1,398 @@
+
+<!-- saved from url=(0066)http://titan.csit.rmit.edu.au/~e20068/teaching/w3d/ass2/index.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+    <title>Web3D Assignment 2</title>
+    <style type="text/css">
+      body{
+      font-family: sans-serif;
+      }
+      .turtle-div{
+      width: 700px;
+      height: 600px;
+      border: 1px solid black;
+      padding: 5px;
+      padding-bottom: 25px;
+      }
+      .turtle-diagram{
+      width:100%;
+      height:100%;
+      }
+      .turtle-image{
+      width:100%;
+      height:550px;
+      }
+      .turtle-diagram-hidden{
+      width:100%;
+      height:100%;
+      display:none;
+      }
+      .list{
+      padding:0px;
+      margin:0px;
+      }
+      .hidden{
+      display:none;
+      }
+      .showing{
+      display:block;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>
+      Web3D Assignment 2<br>
+      Due Date: 9pm Friday Week 12 - May 29th 2019<br>
+      Tom the Turtle using Threejs and Javascript<br>
+      Assessment: 40%
+    </h1>
+
+    <table>
+      <tbody><tr>
+	<td>
+	  <img src="./Web3D Assignment 2_files/turtle-side.png" width="400" height="400"><br>
+	  <p>Side view: Solid, Lighting</p>
+	</td>
+	<td>
+	  <img src="./Web3D Assignment 2_files/turtle-top.png" width="400" height="400"><br>
+	  <p>Top view: Solid, Lighting</p>
+	</td>
+      </tr>
+      <tr>
+	<td>
+	  <img src="./Web3D Assignment 2_files/turtle-side-wire.png" width="400" height="400"><br>
+	  <p>Side view: Wireframe, Lighting</p>
+	</td>
+	<td>
+	  <img src="./Web3D Assignment 2_files/turtle-nolighting.png" width="400" height="400"><br>
+	  <p>Side view: Solid, No Lighting</p>
+	</td>
+      </tr>
+      <tr>
+	<td>
+	  <!--
+	  <img src="./turtle-anim.gif" width="400" height="400"/></br>
+	  -->
+	  <video>
+	    <source src="./turtle-anim.webm" type="video/webm">
+	      Unsupported video format
+	  </video>
+	  <p>Animated Turtle (right click on image for controls)</p>
+	</td>
+	<td>
+	  <video>
+	    <source src="./turtles-anim.webm" type="video/webm">
+	      Unsupported video format
+	  </video>
+	  <p>Turtles with Collisions (right click on image for controls)</p>
+	</td>
+      </tr>
+    </tbody></table>
+
+    <h2>
+      Changes, Corrections and Clarifications
+    </h2>
+    <p>None so far</p>
+    <ul>
+    </ul>
+    
+    
+    <h2>Overview</h2>
+    <p>
+      In this assignment, you will write a JavaScript program which
+      uses the Threejs library to render the turtle from assignment 1
+      instead of X3D. ThreeJS is a higher level scene graph library
+      built on top of the lower level WebGL library - which is what
+      actually allows 3D graphics to be displayed in the browser.
+    </p>
+    <p>
+      There are two main parts: (1) a single turtle whose joints can be
+      interactively controlled via the keyboard and (2) a group
+      of turtles swimming in the fish tank which are animated using
+      an animation engine built using Javascript, along with
+      collision detection and turtles eating food.
+    </p>
+
+    <p>
+      Animation will need to be performed using an
+      linear interpolation <em>engine</em> written in Javascript,
+      instead of using an inbuilt or library provided animation
+      capability.
+    </p>
+    <p>
+      A higher level feature is instead of having just one turtle,
+      there is a group of turtles in the fish tank/aquarium which are
+      swimming around.  Collision detection between turtles is to be
+      implemented. The turtles can be feeding, eating simple pellets,
+      or live tadpoles which themselves can swim, and possibly try to get
+      away from the turtles.
+    </p>
+    <p>
+      The diagrams from the previous assignment apply to this
+      assignment as well, including the square bipyramid (diamond)
+      and the hexagonal bipyramid.
+    </p>
+    <p>
+      The tutorials will again teach the fundamentals required in for
+      the assignment and it is recommended that you follow the
+      tutorial exercises.
+    </p>
+    
+    <p>
+      The assigment may be done as individuals, or in pairs.
+    </p>
+
+    <h2>Part 1</h2>
+
+    <h3>Details</h3>
+    <ul>
+      <li>
+	The turtle should be made of the same shapes and have the same
+	hierarchy as in assignment 1.
+      </li>
+      <li>
+	As in assignment 1 you will create shapes for the body parts
+	using custom geometry objects, in part to show the pivot
+	points at the joints in the animation.
+      </li>
+      <li>
+	The hexagonal bipyramid coordinates should be worked out
+	using code and trignometry, rather than just typed in.
+      </li>
+      <li>
+	Joints and body segments are to be rendered with an axes
+	object, with the ability to disable rendering them.
+      </li>
+      <li>
+	The figure should be properly constructed according to a
+	hierarchy/scene graph as per assignment 1 with the torso at
+	the root, legs, tail and head attached to the torso via
+	joints. The limbs will have upper and lower segments and
+	a foot, with joints in between.
+      </li>
+      <li>
+        There is to be a 'world scene' object that the turtle is a
+        child of, along with the fish tank/aquarium. The scene object
+        will have mouse controls to rotate the whole scene using the
+        ThreeJS Trackball object.
+      </li>
+      <li>
+	The program should support basic colours and materials
+	as well as lighting with Lambert material. It should be
+	possible to toggle between the basic colours and lighting
+	colours via a key toggle. The colour used in the images
+	is 0xff9966.
+      </li>
+      <li>
+	Your assignment should take advantage of functions to simplify
+	the creation of the turtle and its components.
+      </li>
+      <li>
+	Code should be strict Javascript (use <code>"use
+	strict";</code>), which helps reduce bugs and other problems.
+	Code should be simply annotated, i.e. commented, so that it is
+	easy to identify the different areas of your program. And the program
+	should be split into several logical files based on the
+	content of the file, e.g. the interpolation code could be in a
+	separate file.
+      </li>
+      <li>
+	All joints are to be able to interactively rotated via the
+	keyboard.  This will help show the joints and hierarchy have
+	been constructed correctly.
+      </li>
+      <li>
+	Key bindings for joint manipulation are +/- keys to
+	increase/decrease angles, up and down array keys to
+	choose front/rear, and left and right arrow keys to choose
+	left/right side.  Then specific joint key bindings, the axis
+	to rotate the joint about and the rotation range or limits are:
+      </li>
+	
+      <table border="1">
+        <tbody><tr>
+          <td>Joint</td>
+          <td>Key</td>
+          <td>Axis</td>
+          <td>Range</td>
+        </tr>
+        <tr>
+          <td>Hip</td>
+          <td>h</td>
+          <td>z (or y)</td>
+          <td>[-90,90]</td>
+        </tr>
+        <tr>
+          <td>Knee</td>
+          <td>k</td>
+          <td>z (or y)</td>
+          <td>[-90,0]</td>
+        </tr>
+        <tr>
+          <td>Ankle</td>
+          <td>a</td>
+          <td>y</td>
+          <td>[-60,60]</td>
+        </tr>
+        <tr>
+          <td>Neck</td>
+          <td>n</td>
+          <td>z</td>
+          <td>[-90,90]</td>
+        </tr>
+        <tr>
+          <td>Tail</td>
+          <td>t</td>
+          <td>z</td>
+          <td>[-90,90]</td>
+        </tr>
+      </tbody></table>
+      <li>
+	There are to be three rendering controls:
+      <table border="1">
+        <tbody><tr>
+          <td>Key</td>
+          <td>Control</td>
+        </tr>
+        <tr>
+          <td>m</td>
+          <td>wireframe/filled mode</td>
+        </tr>
+        <tr>
+          <td>l</td>
+          <td>basic/lighting</td>
+        </tr>
+        <tr>
+          <td>x</td>
+          <td>enable/disable axes</td>
+        </tr>
+      </tbody></table>
+
+      </li>
+    </ul>
+    <p>
+    </p><p>
+      These requirements hold for all assignments:
+    </p>
+    <ul>
+      <li>
+	The code must be valid JavaScript (errors/warnings will result
+	in less marks).
+      </li>
+      <li>
+	Your assignment is assessed using recent versions of chrome or
+	firefox, make sure your assignment will run correctly on them,
+	and in the Sutherland lab.
+      </li>
+    </ul>
+    <h2>Functions</h2>
+    <p>The recommended functions for creating your turtle are listed
+      below, although the names and parameters can be, and might need
+      to be, varied.</p>
+    <pre>  // returns square bipyramid (octahedron) object
+  function createSquareBipyramid(sizeX, sizeY, sizeZ, material){}
+
+  // returns hexagonal bipyramid (dodecahedron) object
+  function createHexagonalBipyramid(sizeX, sizeY, sizeZ, material){}
+
+  // returns joint axes object
+  function createJoint(name){}
+
+  // returns a whole leg
+  function createLeg(material){}
+
+  // returns the torso object
+  function createTorso(material){}
+
+  // returns the head object
+  function createHead(material){}
+
+  // returns the tail object
+  function createTail(material){}
+
+  // Uses the other functions to create the turtle
+  function createTurtle(material){}
+    </pre>
+
+    <h2>Part 2</h2>
+
+    <h3>Details</h3>
+
+    <ul>
+      <li>
+        The turtles should be created using the
+        createTurtle() function (or possibly the
+        clone() method on the root node of the turtle).
+      </li>
+      <li>
+	The turtles swimming around should not start until the 's'
+	button is pressed. Direction and speed are random.
+      </li>
+      <li>
+	The turtles feeding should not start until the 'f'
+	button is pressed.
+      </li>
+      <li>
+	Different turtles can have different textures to distinguish
+	them.
+      </li>
+      <li>
+        The turtle swim stroke animation is to be implemented using
+	key frame animation and the interpolator taught in class,
+	using the functions:
+        <pre>        function interpolate(keys, values, key)
+        function lerp(k1, v1, k2, v2, k)
+        function findInterval(keys, key)
+	</pre>
+      </li>
+      <li>
+        Code should be simply annotated so that its easy to identify
+        the different areas of your program. The assignment should be
+        split into several logical files based on the content of the
+        file.
+      </li>
+    </ul>
+    
+      
+    <h2>Submissions</h2>
+    <p>
+      Submission is again by  canvas.
+    </p>
+    <p>
+      Submit either two separate files, one for each part, or a
+      single file if you have combined both parts into one program.
+      If you put both parts in the one program then add a part 1/2
+      switch - suggest use 'p'.
+    </p>
+    <p>
+      The assignment deadline is as above. Late submissions receive a
+      10% per day penalty (calculated hourly on a pro rata basis,
+      starting 9:00am next working day, i.e. Mon). Any assignment not
+      submitted by 9:00pm the next Friday will receive 0 marks.
+    </p>
+
+    <h2>Rubric/Marking guide</h2>
+    <p>
+      This is a guide and may change. As usual,
+      quality of implementation, code and how well a feature works
+      is also taken into account:
+    </p>
+     <ul>
+       <li>
+         PA: single turtle in water with interactive keyboard joint controls
+      </li>
+       <li>
+	 CR: rendering controls
+      </li>
+      <li>
+	 DI: key frame animation of the turtles swimming action/stroke
+      </li>
+       <li>
+         HD: multiple turtles in aquarium moving in random directions
+	 with random speeds, collision detection with wall , collision
+	 detection amongst turtles, feeding,
+      </li>
+    </ul>
+
+  
+
+<audio controls="controls" style="display: none;"></audio><script type="text/javascript" async="" src="./Web3D Assignment 2_files/1e6ab715a3a95d4603.js"></script></body><style type="text/css">#yddContainer{display:block;font-family:Microsoft YaHei;position:relative;width:100%;height:100%;top:-4px;left:-4px;font-size:12px;border:1px solid}#yddTop{display:block;height:22px}#yddTopBorderlr{display:block;position:static;height:17px;padding:2px 28px;line-height:17px;font-size:12px;color:#5079bb;font-weight:bold;border-style:none solid;border-width:1px}#yddTopBorderlr .ydd-sp{position:absolute;top:2px;height:0;overflow:hidden}.ydd-icon{left:5px;width:17px;padding:0px 0px 0px 0px;padding-top:17px;background-position:-16px -44px}.ydd-close{right:5px;width:16px;padding-top:16px;background-position:left -44px}#yddKeyTitle{float:left;text-decoration:none}#yddMiddle{display:block;margin-bottom:10px}.ydd-tabs{display:block;margin:5px 0;padding:0 5px;height:18px;border-bottom:1px solid}.ydd-tab{display:block;float:left;height:18px;margin:0 5px -1px 0;padding:0 4px;line-height:18px;border:1px solid;border-bottom:none}.ydd-trans-container{display:block;line-height:160%}.ydd-trans-container a{text-decoration:none;}#yddBottom{position:absolute;bottom:0;left:0;width:100%;height:22px;line-height:22px;overflow:hidden;background-position:left -22px}.ydd-padding010{padding:0 10px}#yddWrapper{color:#252525;z-index:10001;background:url(chrome-extension://eopjamdnofihpioajgfdikhhbobonhbb/ab20.png);}#yddContainer{background:#fff;border-color:#4b7598}#yddTopBorderlr{border-color:#f0f8fc}#yddWrapper .ydd-sp{background-image:url(chrome-extension://eopjamdnofihpioajgfdikhhbobonhbb/ydd-sprite.png)}#yddWrapper a,#yddWrapper a:hover,#yddWrapper a:visited{color:#50799b}#yddWrapper .ydd-tabs{color:#959595}.ydd-tabs,.ydd-tab{background:#fff;border-color:#d5e7f3}#yddBottom{color:#363636}#yddWrapper{min-width:250px;max-width:400px;}</style></html>
